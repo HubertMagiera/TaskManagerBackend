@@ -1,7 +1,11 @@
+using Microsoft.EntityFrameworkCore;
+using ToDoBackend;
+
 var builder = WebApplication.CreateBuilder(args);
 
+//Add dbcontext class to the container
+builder.Services.AddDbContext<DatabaseContext>(options => options.UseMySQL(builder.Configuration.GetConnectionString("ConnectionString")));
 // Add services to the container.
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
