@@ -1,4 +1,6 @@
-﻿namespace ToDoBackend.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ToDoBackend.Entities
 {
     public class task
     {
@@ -16,18 +18,25 @@
             this.task_Type = task_Type;
         }
 
+        [Required]
         public int task_id { get; set; }
 
+        [Required]
+        [MaxLength(50)]
         public string task_name { get; set; }
 
+        [MaxLength(200)]
         public string? task_description { get; set; }
 
+        [Required]
         public DateTime task_creation_date { get; set; }
 
         public DateTime? task_close_date { get; set; }
 
+        [Required]
         public string task_priority { get; set; }
 
+        [Required]
         public string task_status { get; set; }
 
         public task_type task_Type { get; set; }
