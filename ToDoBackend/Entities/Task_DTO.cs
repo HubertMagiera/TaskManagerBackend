@@ -2,11 +2,11 @@
 
 namespace ToDoBackend.Entities
 {
-    public class Task
+    public class Task_DTO
     {
         //EF Core will call the parametrised ctor if it is provided
         //if parametrised ctor is not provided, EF Core calls the parameterless ctor
-        public Task(int task_id, string task_name, string? task_description, DateTime task_creation_date, DateTime? task_close_date, string task_priority, string task_status, Task_type task_Type)
+        public Task_DTO(int task_id, string task_name, string? task_description, DateTime task_creation_date, DateTime? task_close_date, string task_priority, string task_status, Task_type_DTO task_Type)
         {
             this.task_id = task_id;
             this.task_name = task_name;
@@ -39,6 +39,6 @@ namespace ToDoBackend.Entities
         [Required]
         public string task_status { get; set; }
 
-        public Task_type task_Type { get; set; }
+        public Task_type_DTO task_Type { get; set; }
     }
 }
