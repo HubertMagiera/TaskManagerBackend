@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ToDoBackend.Entities.Create_Models;
 using ToDoBackend.Entities.DTO_Models;
 using ToDoBackend.Entities.View_Models;
+using ToDoBackend.Exceptions;
 
 namespace ToDoBackend.Services
 {
@@ -21,12 +22,16 @@ namespace ToDoBackend.Services
 
             //map to dto before sending to db
             Task_DTO toAdd = mapper.Map<Task_DTO>(taskToAdd);
-            User_DTO user = dbContext.user.First(u => u.user_id == 1);//to be replaced later
+            User_DTO user = dbContext.user.FirstOrDefault(u => u.user_id == 1);//to be replaced later
+            if (user == null)
+                throw new User_Not_Found_Exception("Such user was not found.");
             toAdd.user = user;
             
-            Task_type_DTO task_type = dbContext.task_type.First(type => type.task_type_id == taskToAdd.task_type_id);
-            toAdd.task_Type = task_type;
+            Task_type_DTO task_type = dbContext.task_type.FirstOrDefault(type => type.task_type_id == taskToAdd.task_type_id);
+            if (task_type == null)
+                throw new Task_Type_Not_Provided_Exception("Please provide correct task type.");
 
+            toAdd.task_Type = task_type;
             dbContext.task.Add(toAdd);
             dbContext.SaveChanges();
             return toAdd.task_id;
