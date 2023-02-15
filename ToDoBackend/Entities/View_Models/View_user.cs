@@ -1,17 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ToDoBackend.Entities
+namespace ToDoBackend.Entities.View_Models
 {
-    public class User
+    public class View_user
     {
-        public User(int user_id, string user_name, string user_surname, string user_email, string user_password)
-        {
-            this.user_id = user_id;
-            this.user_name = user_name;
-            this.user_surname = user_surname;
-            this.user_email = user_email;
-            this.user_password = user_password;
-        }
+        //public User(int user_id, string user_name, string user_surname, string user_email, string user_password)
+        //{
+        //    this.user_id = user_id;
+        //    this.user_name = user_name;
+        //    this.user_surname = user_surname;
+        //    this.user_email = user_email;
+        //    this.user_password = user_password;
+        //}
 
         [Required]
         public int user_id { get; set; }

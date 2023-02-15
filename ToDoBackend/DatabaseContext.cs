@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ToDoBackend.Entities;
+using ToDoBackend.Entities.DTO_Models;
 
 namespace ToDoBackend
 {
