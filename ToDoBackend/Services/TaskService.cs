@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using ToDoBackend.Entities.Create_Models;
 using ToDoBackend.Entities.DTO_Models;
+using ToDoBackend.Entities.Update_Models;
 using ToDoBackend.Entities.View_Models;
 using ToDoBackend.Exceptions;
 
@@ -79,9 +81,31 @@ namespace ToDoBackend.Services
             return mapper.Map<View_task>(task);
         }
 
-        public bool UpdateTask(View_task taskToUpdate, int taskID)
+        public void UpdateTask(Update_Task taskToUpdate)
         {
-            throw new NotImplementedException();
+            int id = taskToUpdate.task_id;
+
+            var task_type = dbContext.task_type.FirstOrDefault(type => type.task_type_id == taskToUpdate.task_type_id);
+            if (task_type == null)
+                throw new Task_Type_Not_Provided_Exception("Task type not provided or not available in database");
+
+            var taskFromDB = dbContext.task
+                .Include(task => task.task_Type)
+                .Include(task => task.user)
+                .FirstOrDefault(task => task.task_id == id && task.user.user_id == 1);//to be redeveloped to compare with real user id
+            if (taskFromDB == null)
+                throw new Task_Not_Found_Exception("There is no task for provided ID or this task was not created by current user");
+            taskFromDB.task_name = taskToUpdate.task_name;
+            taskFromDB.task_description = taskToUpdate.task_description;
+            if (taskToUpdate.task_status == "Completed" || taskToUpdate.task_status == "Cancelled")
+                taskFromDB.task_close_date = DateTime.Now;
+            else
+                taskFromDB.task_close_date = null;
+            taskFromDB.task_priority = taskToUpdate.task_priority;
+            taskFromDB.task_status = taskToUpdate.task_status;
+            taskFromDB.task_Type = task_type;
+
+            dbContext.SaveChanges();
         }
     }
 }

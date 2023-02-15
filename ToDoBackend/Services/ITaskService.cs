@@ -1,4 +1,5 @@
 ﻿using ToDoBackend.Entities.Create_Models;
+using ToDoBackend.Entities.Update_Models;
 using ToDoBackend.Entities.View_Models;
 
 namespace ToDoBackend.Services
@@ -9,7 +10,7 @@ namespace ToDoBackend.Services
 
         View_task GetTaskByID(int id);
 
-        bool UpdateTask(View_task taskToUpdate, int taskID);
+        void UpdateTask(Update_Task taskToUpdate);
 
         int AddNewTask(Create_Task taskToAdd);
 

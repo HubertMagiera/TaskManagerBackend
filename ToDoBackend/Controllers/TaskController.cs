@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using ToDoBackend.Entities.Create_Models;
+using ToDoBackend.Entities.Update_Models;
 using ToDoBackend.Entities.View_Models;
 using ToDoBackend.Services;
 
@@ -48,6 +49,15 @@ namespace ToDoBackend.Controllers
             //instead of deleting, it moves the task to cancelled stage
             taskService.DeleteTask(id);
             return NoContent();
+        }
+
+        [HttpPut]
+        public ActionResult UpdateTask([FromBody] Update_Task taskToBeUpdated)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            taskService.UpdateTask(taskToBeUpdated);
+            return Ok();
         }
 
     }
