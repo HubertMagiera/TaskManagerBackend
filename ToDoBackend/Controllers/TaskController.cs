@@ -32,10 +32,9 @@ namespace ToDoBackend.Controllers
                 return BadRequest(ModelState);
             }
             int taskID = taskService.AddNewTask(taskToAdd);
-            if (taskID != -1)
-                return Created(String.Format("taskManager/tasks/{0}", taskID), null);
-            else
-                return BadRequest();
+
+            return Created(String.Format("taskManager/tasks/{0}", taskID), null);
+
         }
 
     }
