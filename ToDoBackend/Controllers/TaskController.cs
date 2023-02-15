@@ -36,6 +36,11 @@ namespace ToDoBackend.Controllers
             return Created(String.Format("taskManager/tasks/{0}", taskID), null);
 
         }
+        [HttpGet("{id}")]
+        public ActionResult<View_task> GetTaskByID([FromRoute] int id)
+        {
+            return Ok(taskService.GetTaskByID(id));
+        }
 
     }
 }

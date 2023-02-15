@@ -57,7 +57,17 @@ namespace ToDoBackend.Services
 
         public View_task GetTaskByID(int id)
         {
-            throw new NotImplementedException();
+            //at the moment it will return specified task regardless who asks for it
+            //to be redeveloped to check if task owner asks for the task
+            //if user who asks == creator of a task and task id == provided id
+            var task = dbContext.task
+                .Include(task => task.task_Type)
+                .Include(task => task.user)
+                .FirstOrDefault(t => t.task_id == id && t.user.user_id == 1);//to be redeveloped to compare with real user id
+            if (task == null)
+                throw new Task_Not_Found_Exception("There is no task for provided ID or this task was not created by current user");
+
+            return mapper.Map<View_task>(task);
         }
 
         public bool UpdateTask(View_task taskToUpdate, int taskID)
