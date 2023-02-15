@@ -42,5 +42,13 @@ namespace ToDoBackend.Controllers
             return Ok(taskService.GetTaskByID(id));
         }
 
+        [HttpDelete("{id}")]
+        public ActionResult DeleteTask([FromRoute] int id)
+        {
+            //instead of deleting, it moves the task to cancelled stage
+            taskService.DeleteTask(id);
+            return NoContent();
+        }
+
     }
 }

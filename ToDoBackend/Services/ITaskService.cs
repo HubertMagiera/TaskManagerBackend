@@ -13,6 +13,6 @@ namespace ToDoBackend.Services
 
         int AddNewTask(Create_Task taskToAdd);
 
-        bool DeleteTask(View_task taskToRemove);
+        void DeleteTask(int id);
     }
 }

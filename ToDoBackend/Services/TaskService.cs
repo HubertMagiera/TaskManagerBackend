@@ -38,9 +38,18 @@ namespace ToDoBackend.Services
 
         }
 
-        public bool DeleteTask(View_task taskToRemove)
+        public void DeleteTask(int id)
         {
-            throw new NotImplementedException();
+            var taskToArchive = dbContext.task
+                .Include(task => task.task_Type)
+                .Include(task => task.user)
+                .FirstOrDefault(task => task.task_id == id && task.user.user_id == 1);//to be redeveloped to compare with real user id
+            if (taskToArchive == null)
+                throw new Task_Not_Found_Exception("There is no task for provided ID or this task was not created by current user");
+            
+            taskToArchive.task_close_date = DateTime.Now;
+            taskToArchive.task_status = "Cancelled";
+            dbContext.SaveChanges();
         }
 
         public List<View_task> GetAllTasksForUser()
