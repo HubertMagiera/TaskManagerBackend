@@ -1,4 +1,7 @@
-﻿using System.Security.Claims;
+﻿using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using ToDoBackend.Entities;
 using ToDoBackend.Entities.DTO_Models;
 
@@ -8,7 +11,7 @@ namespace ToDoBackend.Services
     {
         private readonly int Token_Valid_Time = 15;
 
-        public string CreateToken(string key, string issuer, User_DTO user)
+        public string CreateToken(string key, string issuer,string audience, User_DTO user)
         {
             var claims = new List<Claim>()
             {
@@ -17,6 +20,12 @@ namespace ToDoBackend.Services
                 new Claim(ClaimTypes.Surname,user.user_surname),
                 new Claim(ClaimTypes.Email,user.user_email)
             };
+
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+            var tokenDescriptor = new JwtSecurityToken(issuer, audience, claims,
+                expires: DateTime.Now.AddMinutes(Token_Valid_Time), signingCredentials: credentials);
+            return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
         }
     }
 }

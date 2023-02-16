@@ -5,6 +5,6 @@ namespace ToDoBackend.Services
 {
     public interface ITokenService
     {
-        string CreateToken(string key, string issuer, User_DTO user);
+        string CreateToken(string key, string issuer,string audience, User_DTO user);
     }
 }

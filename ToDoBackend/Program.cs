@@ -31,6 +31,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //add services for the controllers
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddHttpContextAccessor();
 //add auto mapper
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
