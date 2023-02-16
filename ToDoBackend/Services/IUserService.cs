@@ -1,13 +1,14 @@
 ﻿using ToDoBackend.Entities;
 using ToDoBackend.Entities.Create_Models;
+using ToDoBackend.Entities.DTO_Models;
 using ToDoBackend.Entities.View_Models;
 
 namespace ToDoBackend.Services
 {
     public interface IUserService
     {
-        void CreateUser(Create_User user);
+        void Create_User(Create_User create_user);
 
-        string LoginUser(LoginUser user);
+        User_DTO Get_User(LoginUser login_user);
     }
 }

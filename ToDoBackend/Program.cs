@@ -5,6 +5,8 @@ using ToDoBackend;
 using ToDoBackend.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
+using ToDoBackend.Entities.DTO_Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +36,8 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddHttpContextAccessor();
+//add hasher for password hashing
+builder.Services.AddScoped<IPasswordHasher<User_DTO>,PasswordHasher<User_DTO>>();
 //add auto mapper
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 //add middleware
