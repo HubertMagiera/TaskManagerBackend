@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using System.Text.RegularExpressions;
 using ToDoBackend.Entities;
 using ToDoBackend.Entities.Create_Models;
 using ToDoBackend.Entities.DTO_Models;
@@ -24,8 +25,10 @@ namespace ToDoBackend.Services
 
         public void Create_User(Create_User create_user)
         {
+            bool emailCorrect = validateEmailFormat(create_user.user_email);
+            if (emailCorrect == false)
+                throw new Not_Email_Format_Exception("Provided email address has invalid format");
             var userInDatabase = dbcontext.user.FirstOrDefault(u => u.user_email == create_user.user_email);
-
             if (userInDatabase != null)
                 throw new User_Already_Exists_Exception("Provided email address is already in use");
             bool passwordVerificationResult = validatePasswordMeetsRules(create_user.user_password);
@@ -74,6 +77,13 @@ namespace ToDoBackend.Services
                     return true;
             }
             return false;
+        }
+
+        private bool validateEmailFormat(string emailAddress)
+        {
+            Regex pattern = new Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
+            bool result = pattern.IsMatch(emailAddress);
+            return result;
         }
     }
 }

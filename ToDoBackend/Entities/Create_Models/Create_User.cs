@@ -4,9 +4,6 @@ namespace ToDoBackend.Entities.Create_Models
 {
     public class Create_User
     {
-        //[Required]
-        //public int user_id { get; set; }
-
         [Required]
         [MaxLength(30)]
         public string user_name { get; set; }

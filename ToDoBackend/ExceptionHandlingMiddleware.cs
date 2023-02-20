@@ -41,6 +41,11 @@ namespace ToDoBackend
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
             }
+            catch(Not_Email_Format_Exception ex)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
+            }
             catch(Exception ex)
             {
                 context.Response.StatusCode = 500;
