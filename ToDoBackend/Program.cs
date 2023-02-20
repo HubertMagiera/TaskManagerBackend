@@ -37,6 +37,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IHttpContextService, HttpContextService>();
 builder.Services.AddHttpContextAccessor();
 //add hasher for password hashing
 builder.Services.AddScoped<IPasswordHasher<User_DTO>,PasswordHasher<User_DTO>>();

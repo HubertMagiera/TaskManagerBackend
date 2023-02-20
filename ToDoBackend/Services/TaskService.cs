@@ -13,11 +13,13 @@ namespace ToDoBackend.Services
     {
         private readonly IMapper mapper;
         private readonly DatabaseContext dbContext;
+        private readonly IHttpContextService contextService;
 
-        public TaskService(DatabaseContext _dbContext, IMapper _mapper)
+        public TaskService(DatabaseContext _dbContext, IMapper _mapper,IHttpContextService _contextService)
         {
             this.dbContext = _dbContext;
             this.mapper = _mapper;
+            this.contextService = _contextService;
         }
         public int AddNewTask(Create_Task taskToAdd)
         {
