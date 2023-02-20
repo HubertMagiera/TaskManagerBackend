@@ -22,8 +22,6 @@ namespace ToDoBackend.Controllers
         [HttpGet]
         public ActionResult<List<View_task>> GetTasksForUser()
         {
-            //at the moment it returns all tasks from db,
-            //no matter who created them
             return Ok(taskService.GetAllTasksForUser());
         }
         [HttpPost]
