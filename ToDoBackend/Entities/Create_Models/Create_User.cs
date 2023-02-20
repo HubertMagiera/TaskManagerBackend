@@ -16,7 +16,6 @@ namespace ToDoBackend.Entities.Create_Models
         public string user_surname { get; set; }
 
         [Required]
-        [EmailAddress(ErrorMessage = "Please provide email address in correct format")]
         [MaxLength(50)]
         public string user_email { get; set; }
 

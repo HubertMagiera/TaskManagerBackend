@@ -31,6 +31,16 @@ namespace ToDoBackend
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
             }
+            catch(User_Already_Exists_Exception ex)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
+            }
+            catch(Password_Does_Not_Meet_Rules_Exception ex)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
+            }
             catch(Exception ex)
             {
                 context.Response.StatusCode = 500;

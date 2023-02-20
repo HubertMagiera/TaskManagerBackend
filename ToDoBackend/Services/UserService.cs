@@ -24,12 +24,26 @@ namespace ToDoBackend.Services
 
         public void Create_User(Create_User create_user)
         {
-            throw new NotImplementedException();
+            var userInDatabase = dbcontext.user.FirstOrDefault(u => u.user_email == create_user.user_email);
+
+            if (userInDatabase != null)
+                throw new User_Already_Exists_Exception("Provided email address is already in use");
+            bool passwordVerificationResult = validatePasswordMeetsRules(create_user.user_password);
+            if (passwordVerificationResult == false)
+                throw new Password_Does_Not_Meet_Rules_Exception("Provided password does not meet reqiured conditions. Please provide another one");
+
+            var userToBeAdded = mapper.Map<User_DTO>(create_user);
+            userToBeAdded.user_id = dbcontext.user.Max(u => u.user_id) +1;
+            userToBeAdded.user_password = hasher.HashPassword(userToBeAdded, create_user.user_password);
+
+            dbcontext.user.Add(userToBeAdded);
+            dbcontext.SaveChanges();
         }
 
         public User_DTO Get_User(LoginUser login_user)
         {
             var user = dbcontext.user.FirstOrDefault(u => u.user_email == login_user.user_email);
+
             if (user == null)
                 throw new User_Not_Found_Exception("Provided credentials are wrong");
             PasswordVerificationResult result = hasher.VerifyHashedPassword(user, user.user_password, login_user.user_password);
@@ -37,6 +51,29 @@ namespace ToDoBackend.Services
                 throw new Wrong_Credentials_Exception("Provided credentials are wrong");
             return user;
 
+        }
+
+        private bool validatePasswordMeetsRules(string password)
+        {
+            //password needs to be:
+            //minimum 8 characters long
+            //contain at least one upper case letter
+            //contain at least one lower case letter
+            //contain at least on digit
+            //can not contain whitespaces
+            //must contain one of the special characters
+
+            if (password.Length < 8 || !password.Any(char.IsUpper) || !password.Any(char.IsLower)|| !password.Any(char.IsDigit))
+                return false;
+
+            string specialCharacters = "!@#$%^&*+-/?<>;~`[]{}:,.|=_";
+            char[] specialCharactersArray = specialCharacters.ToCharArray();
+            foreach(char ch in password)
+            {
+                if (specialCharactersArray.Contains(ch))
+                    return true;
+            }
+            return false;
         }
     }
 }

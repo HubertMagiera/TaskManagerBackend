@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ToDoBackend.Entities;
+using ToDoBackend.Entities.Create_Models;
 using ToDoBackend.Services;
 
 namespace ToDoBackend.Controllers
@@ -28,5 +29,21 @@ namespace ToDoBackend.Controllers
 
             return Ok(token);
         }
+
+        [HttpPost]
+        [Route("register")]
+        public ActionResult CreateUser([FromBody] Create_User createUser)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            userService.Create_User(createUser);
+            return new ObjectResult(null)
+            {
+                StatusCode = StatusCodes.Status201Created
+            };
+        }
+
     }
 }
