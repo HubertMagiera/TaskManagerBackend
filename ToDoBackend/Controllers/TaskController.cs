@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using ToDoBackend.Entities.Create_Models;
@@ -10,6 +11,7 @@ namespace ToDoBackend.Controllers
 {
     [Route("taskManager/tasks")]
     [ApiController]
+    [Authorize]
     public class TaskController : ControllerBase
     {
         private readonly ITaskService taskService;

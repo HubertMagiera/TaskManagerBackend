@@ -4,12 +4,7 @@ namespace ToDoBackend
 {
     public class ExceptionHandlingMiddleware :IMiddleware
     {
-        //private readonly RequestDelegate _next;
-        //public ExceptionHandlingMiddleware(RequestDelegate next)
-        //{
-        //    _next = next;
-        //}
-
+        private readonly string errorMessage = "Something has gone wrong. Please see the error message:";
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             try
@@ -19,27 +14,27 @@ namespace ToDoBackend
             catch(Task_Type_Not_Provided_Exception ex)
             {
                 context.Response.StatusCode = 400;
-                await context.Response.WriteAsync(String.Format("Something has gone wrong. Please see the error message: {0}", ex.Message));
+                await context.Response.WriteAsync(String.Format("{0}: {1}",errorMessage, ex.Message));
             }
             catch(User_Not_Found_Exception ex)
             {
                 context.Response.StatusCode = 404;
-                await context.Response.WriteAsync(String.Format("Something has gone wrong. Please see the error message: {0}", ex.Message));
+                await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
             }
             catch(Task_Not_Found_Exception ex)
             {
                 context.Response.StatusCode = 404;
-                await context.Response.WriteAsync(String.Format("Something has gone wrong. Please see the error message: {0}", ex.Message));
+                await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
             }
             catch(Wrong_Credentials_Exception ex)
             {
                 context.Response.StatusCode = 400;
-                await context.Response.WriteAsync(String.Format("Something has gone wrong. Please see the error message: {0}", ex.Message));
+                await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
             }
             catch(Exception ex)
             {
                 context.Response.StatusCode = 500;
-                await context.Response.WriteAsync(String.Format("Something has gone wrong. Please see the error message: {0}", ex.Message));
+                await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
             }
         }
     }

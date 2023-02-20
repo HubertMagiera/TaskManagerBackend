@@ -7,21 +7,23 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using ToDoBackend.Entities.DTO_Models;
+using Google.Protobuf.WellKnownTypes;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //configure authentication with bearer
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-{ options.SaveToken = true;
+{   options.SaveToken = true;
+    //options.RequireHttpsMetadata = false;
     options.TokenValidationParameters = new TokenValidationParameters()
     {
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration.GetSection("Jwt")["Jwt:Issuer"],
-        ValidAudience = builder.Configuration.GetSection("Jwt")["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt")["Jwt:Key"]))
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     }; 
     });
 //Add dbcontext class to the container
@@ -53,6 +55,9 @@ if (app.Environment.IsDevelopment())
 }
 //add middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+//add authentication
+app.UseAuthentication();
 
 app.UseHttpsRedirection();
 
