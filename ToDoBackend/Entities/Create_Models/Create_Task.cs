@@ -6,8 +6,6 @@ namespace ToDoBackend.Entities.Create_Models
 {
     public class Create_Task
     {
-        [Required]
-        public int task_id { get; set; }
 
         [Required(ErrorMessage = "Task name is required")]
         [MaxLength(50)]
@@ -15,11 +13,6 @@ namespace ToDoBackend.Entities.Create_Models
 
         [MaxLength(200)]
         public string? task_description { get; set; }
-
-        [Required]
-        public DateTime task_creation_date { get; set; }
-
-        public DateTime? task_close_date { get; set; }
 
         [Required(ErrorMessage = "Task priority is required")]
         public string task_priority { get; set; }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using ToDoBackend.Entities.Create_Models;
 using ToDoBackend.Entities.DTO_Models;
@@ -26,16 +27,20 @@ namespace ToDoBackend.Services
             var userID = contextService.GetUserID();//reads id of a user who created this request
             //map to dto before sending to db
             Task_DTO toAdd = mapper.Map<Task_DTO>(taskToAdd);
+
             User_DTO user = dbContext.user.FirstOrDefault(u => u.user_id == userID);
             if (user == null)
                 throw new User_Not_Found_Exception("Such user was not found.");
-            toAdd.user = user;
-            
+
             Task_type_DTO task_type = dbContext.task_type.FirstOrDefault(type => type.task_type_id == taskToAdd.task_type_id);//get task type for provided task type id
             if (task_type == null)
                 throw new Task_Type_Not_Provided_Exception("Please provide correct task type.");
 
+            toAdd.task_id = dbContext.task.Max(task => task.task_id) +1;
+            toAdd.task_close_date = null;
+            toAdd.task_creation_date = DateTime.Now;
             toAdd.task_Type = task_type;//assign task type
+            toAdd.user = user;
             dbContext.task.Add(toAdd);
             dbContext.SaveChanges();
             return toAdd.task_id;

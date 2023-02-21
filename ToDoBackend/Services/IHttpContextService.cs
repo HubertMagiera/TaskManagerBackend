@@ -1,4 +1,6 @@
-﻿namespace ToDoBackend.Services
+﻿using System.Security.Claims;
+
+namespace ToDoBackend.Services
 {
     public interface IHttpContextService
     {
