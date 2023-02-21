@@ -9,11 +9,11 @@ namespace ToDoBackend.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly int Token_Valid_Time = 15;
+        private readonly int Token_Valid_Time = 15;//generated token is valid for 15 minutes
 
         public string CreateToken(string key, string issuer,string audience, User_DTO user)
         {
-            var claims = new List<Claim>()
+            var claims = new List<Claim>()//claims represent info about the user
             {
                 new Claim(ClaimTypes.NameIdentifier,user.user_id.ToString()),
                 new Claim(ClaimTypes.Name,user.user_name),

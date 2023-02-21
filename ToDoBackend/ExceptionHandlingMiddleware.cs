@@ -1,9 +1,11 @@
 ﻿using ToDoBackend.Exceptions;
 
 namespace ToDoBackend
-{
+{   
+    //class used for handling errors
     public class ExceptionHandlingMiddleware :IMiddleware
     {
+        //standard error message
         private readonly string errorMessage = "Something has gone wrong. Please see the error message:";
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {

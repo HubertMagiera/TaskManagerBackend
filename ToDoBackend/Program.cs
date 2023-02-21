@@ -58,6 +58,8 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 //add authentication
+//for implementing jwt token authentication, both app.UseAuthentication() and app.UseAuthorization()
+//are reqiured, but useAuthentication needs to be before useAuthorization
 app.UseAuthentication();
 
 app.UseHttpsRedirection();

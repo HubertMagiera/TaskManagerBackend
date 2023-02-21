@@ -9,6 +9,9 @@ namespace ToDoBackend
     {
         public AutoMapperProfile()
         {
+            //creating mapping profiles for classes
+            //in case dto and non dto models have the same structure, CreateMap<base, destination>() is sufficient
+            //in case names or strucutre is different, need to add .ForMember() to manually specify appropriate fields
             CreateMap<User_DTO, View_user>();
             CreateMap<Task_DTO, View_task>()
                 .ForMember(view => view.user_id, map => map.MapFrom(dto => dto.user.user_id))

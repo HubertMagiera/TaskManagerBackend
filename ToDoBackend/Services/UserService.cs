@@ -25,19 +25,23 @@ namespace ToDoBackend.Services
 
         public void Create_User(Create_User create_user)
         {
+            //first step is to validate if provided email address is valid
             bool emailCorrect = validateEmailFormat(create_user.user_email);
             if (emailCorrect == false)
                 throw new Not_Email_Format_Exception("Provided email address has invalid format");
+            //then method verifies if there is already a user assigned to provided email address
             var userInDatabase = dbcontext.user.FirstOrDefault(u => u.user_email == create_user.user_email);
             if (userInDatabase != null)
                 throw new User_Already_Exists_Exception("Provided email address is already in use");
+            //then method verifies if provided password meets reqiured rules
             bool passwordVerificationResult = validatePasswordMeetsRules(create_user.user_password);
             if (passwordVerificationResult == false)
                 throw new Password_Does_Not_Meet_Rules_Exception("Provided password does not meet reqiured conditions. Please provide another one");
 
+            //user is mapped into user_dto class which is the same as the database table
             var userToBeAdded = mapper.Map<User_DTO>(create_user);
-            userToBeAdded.user_id = dbcontext.user.Max(u => u.user_id) +1;
-            userToBeAdded.user_password = hasher.HashPassword(userToBeAdded, create_user.user_password);
+            userToBeAdded.user_id = dbcontext.user.Max(u => u.user_id) +1;//read max user id from database and assign +1 as new user id
+            userToBeAdded.user_password = hasher.HashPassword(userToBeAdded, create_user.user_password);//hash provided password
 
             dbcontext.user.Add(userToBeAdded);
             dbcontext.SaveChanges();
@@ -45,6 +49,9 @@ namespace ToDoBackend.Services
 
         public User_DTO Get_User(LoginUser login_user)
         {
+            //this method verifies if user for provided email address exsists in database
+            //if yes, it checks if provided password is the same as the one stored in database
+            //if both conditions are met, method returns the user
             var user = dbcontext.user.FirstOrDefault(u => u.user_email == login_user.user_email);
 
             if (user == null)
@@ -66,14 +73,14 @@ namespace ToDoBackend.Services
             //can not contain whitespaces
             //must contain one of the special characters
 
-            if (password.Length < 8 || !password.Any(char.IsUpper) || !password.Any(char.IsLower)|| !password.Any(char.IsDigit))
+            if (password.Length < 8 || !password.Any(char.IsUpper) || !password.Any(char.IsLower)|| !password.Any(char.IsDigit) || !password.Any(char.IsWhiteSpace))
                 return false;
 
-            string specialCharacters = "!@#$%^&*+-/?<>;~`[]{}:,.|=_";
+            string specialCharacters = "!@#$%^&*+-/?<>;~`[]{}:,.|=_";//special characters. At least one of them needs to be present in provided password
             char[] specialCharactersArray = specialCharacters.ToCharArray();
             foreach(char ch in password)
             {
-                if (specialCharactersArray.Contains(ch))
+                if (specialCharactersArray.Contains(ch))//if char from password is visible in special characters list, return true
                     return true;
             }
             return false;
@@ -81,6 +88,7 @@ namespace ToDoBackend.Services
 
         private bool validateEmailFormat(string emailAddress)
         {
+            //this method validates if provided email address has correct format
             Regex pattern = new Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
             bool result = pattern.IsMatch(emailAddress);
             return result;
