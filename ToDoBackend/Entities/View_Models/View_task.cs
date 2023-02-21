@@ -4,20 +4,6 @@ namespace ToDoBackend.Entities.View_Models
 {
     public class View_task
     {
-        //EF Core will call the parametrised ctor if it is provided
-        //if parametrised ctor is not provided, EF Core calls the parameterless ctor
-        //public Task(int task_id, string task_name, string? task_description, DateTime task_creation_date, DateTime? task_close_date, string task_priority, string task_status, Task_type task_Type)
-        //{
-        //    this.task_id = task_id;
-        //    this.task_name = task_name;
-        //    this.task_description = task_description;
-        //    this.task_creation_date = task_creation_date;
-        //    this.task_close_date = task_close_date;
-        //    this.task_priority = task_priority;
-        //    this.task_status = task_status;
-        //    this.task_Type = task_Type;
-        //}
-
         [Required]
         public int task_id { get; set; }
 
