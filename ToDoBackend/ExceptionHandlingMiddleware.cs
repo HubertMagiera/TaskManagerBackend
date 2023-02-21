@@ -48,6 +48,11 @@ namespace ToDoBackend
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
             }
+            catch(User_Not_Allowed_Exception ex)
+            {
+                context.Response.StatusCode = 403;
+                await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
+            }
             catch(Exception ex)
             {
                 context.Response.StatusCode = 500;

@@ -8,6 +8,8 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using ToDoBackend.Entities.DTO_Models;
 using Google.Protobuf.WellKnownTypes;
+using Microsoft.AspNetCore.Authorization;
+using ToDoBackend.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +40,8 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IHttpContextService, HttpContextService>();
+//add classes which run authorization rules
+builder.Services.AddScoped<IAuthorizationHandler, Task_Owner_Reqiurement_Handler>();
 builder.Services.AddHttpContextAccessor();
 //add hasher for password hashing
 builder.Services.AddScoped<IPasswordHasher<User_DTO>,PasswordHasher<User_DTO>>();

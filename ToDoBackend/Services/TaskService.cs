@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using ToDoBackend.Authorization;
 using ToDoBackend.Entities.Create_Models;
 using ToDoBackend.Entities.DTO_Models;
 using ToDoBackend.Entities.Update_Models;
@@ -15,12 +17,14 @@ namespace ToDoBackend.Services
         private readonly IMapper mapper;
         private readonly DatabaseContext dbContext;
         private readonly IHttpContextService contextService;
+        private readonly IAuthorizationService authorizationService;
 
-        public TaskService(DatabaseContext _dbContext, IMapper _mapper,IHttpContextService _contextService)
+        public TaskService(DatabaseContext _dbContext, IMapper _mapper,IHttpContextService _contextService, IAuthorizationService _authorizationService)
         {
             this.dbContext = _dbContext;
             this.mapper = _mapper;
             this.contextService = _contextService;
+            this.authorizationService = _authorizationService;
         }
         public int AddNewTask(Create_Task taskToAdd)
         {
@@ -49,14 +53,18 @@ namespace ToDoBackend.Services
 
         public void DeleteTask(int id)
         {
-            var userID = contextService.GetUserID();//read user id
             var taskToArchive = dbContext.task
                 .Include(task => task.task_Type)
                 .Include(task => task.user)
-                .FirstOrDefault(task => task.task_id == id && task.user.user_id == userID);//find task that should be archived
+                .FirstOrDefault(task => task.task_id == id);//find task that should be archived
             if (taskToArchive == null)//if task not found, throw an error
-                throw new Task_Not_Found_Exception("There is no task for provided ID or this task was not created by current user");
-            
+                throw new Task_Not_Found_Exception("There is no task for provided ID");
+
+            //verification if user who wants to update a task is also its owner/creator
+            var verificationResult = authorizationService.AuthorizeAsync(contextService.GetUser(), taskToArchive, new Task_Owner_Reqiurement()).Result;
+            if (!verificationResult.Succeeded)
+                throw new User_Not_Allowed_Exception("You are not allowed to archive this task");
+
             taskToArchive.task_close_date = DateTime.Now;//set task close date
             taskToArchive.task_status = "Cancelled";//set task status
             dbContext.SaveChanges();
@@ -76,20 +84,23 @@ namespace ToDoBackend.Services
 
         public View_task GetTaskByID(int id)
         {
-            var userID = contextService.GetUserID();//read user id
             var task = dbContext.task
                 .Include(task => task.task_Type)
                 .Include(task => task.user)
-                .FirstOrDefault(t => t.task_id == id && t.user.user_id == userID);//find task by provided id
+                .FirstOrDefault(t => t.task_id == id);//find task by provided id
             if (task == null)//in case no task found, throw an error
-                throw new Task_Not_Found_Exception("There is no task for provided ID or this task was not created by current user");
+                throw new Task_Not_Found_Exception("There is no task for provided ID");
+
+            //verification if user who wants to update a task is also its owner/creator
+            var verificationResult = authorizationService.AuthorizeAsync(contextService.GetUser(), task, new Task_Owner_Reqiurement()).Result;
+            if (!verificationResult.Succeeded)
+                throw new User_Not_Allowed_Exception("You are not allowed to view this task");
 
             return mapper.Map<View_task>(task);
         }
 
         public void UpdateTask(Update_Task taskToUpdate)
         {
-            var userID = contextService.GetUserID();//read user id
             int id = taskToUpdate.task_id;
 
             var task_type = dbContext.task_type.FirstOrDefault(type => type.task_type_id == taskToUpdate.task_type_id);//find task type for id provided
@@ -99,9 +110,15 @@ namespace ToDoBackend.Services
             var taskFromDB = dbContext.task
                 .Include(task => task.task_Type)
                 .Include(task => task.user)
-                .FirstOrDefault(task => task.task_id == id && task.user.user_id == userID);//find task that needs to be updated
+                .FirstOrDefault(task => task.task_id == id);//find task that needs to be updated
             if (taskFromDB == null)//in case task is not found, throw an error
                 throw new Task_Not_Found_Exception("There is no task for provided ID or this task was not created by current user");
+
+            //verification if user who wants to update a task is also its owner/creator
+            var verificationResult = authorizationService.AuthorizeAsync(contextService.GetUser(), taskFromDB, new Task_Owner_Reqiurement()).Result;
+            if (!verificationResult.Succeeded)
+                throw new User_Not_Allowed_Exception("You are not allowed to update this task");
+
             //update values for the task
             taskFromDB.task_name = taskToUpdate.task_name;
             taskFromDB.task_description = taskToUpdate.task_description;
