@@ -13,6 +13,10 @@ using ToDoBackend.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//read authentication settings from appsettings.json and bind them to appropriate class
+AuthenticationSettings settings = new AuthenticationSettings();
+builder.Configuration.GetSection("Jwt").Bind(settings);
+builder.Services.AddSingleton(settings);
 //configure authentication with bearer
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {   options.SaveToken = true;
@@ -23,9 +27,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        ValidIssuer = settings.Issuer,
+        ValidAudience = settings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.Key))
     }; 
     });
 //Add dbcontext class to the container

@@ -5,16 +5,6 @@ namespace ToDoBackend.Entities.DTO_Models
 {
     public class User_DTO
     {
-        //EF Core will call the parametrised ctor if it is provided
-        //if parametrised ctor is not provided, EF Core calls the parameterless ctor
-        //public User_DTO(int user_id, string user_name, string user_surname, string user_email, string user_password)
-        //{
-        //    this.user_id = user_id;
-        //    this.user_name = user_name;
-        //    this.user_surname = user_surname;
-        //    this.user_email = user_email;
-        //    this.user_password = user_password;
-        //}
 
         [Required]
         public int user_id { get; set; }
@@ -36,5 +26,7 @@ namespace ToDoBackend.Entities.DTO_Models
         [Required]
         [MaxLength(500)]
         public string user_password { get; set; }
+
+        public string user_refresh_token { get; set; }//property used to store refresh token for a user
     }
 }

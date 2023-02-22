@@ -10,24 +10,28 @@ namespace ToDoBackend.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService userService;
-        private readonly ITokenService tokenService;
-        private readonly IConfiguration config;
 
-        public UserController(IUserService _userService, ITokenService _tokenService, IConfiguration _config)
+        public UserController(IUserService _userService)
         {
             userService = _userService;
-            tokenService = _tokenService;
-            config = _config;
         }
 
         [HttpPost]
         [Route("login")]
-        public ActionResult LoginUser([FromBody] LoginUser loginUser)
+        public ActionResult<Token_model> LoginUser([FromBody] LoginUser loginUser)
         {
-            var user = userService.Get_User(loginUser);
-            string token = tokenService.CreateToken(config["Jwt:Key"], config["Jwt:Issuer"], config["Jwt:Audience"], user);
 
-            return Ok(token);
+            return Ok(userService.Login_User(loginUser));
+        }
+
+        [HttpPost]
+        [Route("refresh")]
+        public ActionResult<Token_model> RefreshAccessToken([FromBody]Token_model model)
+        {
+            if (model == null)
+                return BadRequest();
+
+            return Ok(userService.Refresh_Token(model));
         }
 
         [HttpPost]

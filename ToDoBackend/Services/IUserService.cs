@@ -9,6 +9,8 @@ namespace ToDoBackend.Services
     {
         void Create_User(Create_User create_user);
 
-        User_DTO Get_User(LoginUser login_user);
+        Token_model Login_User(LoginUser login_user);
+
+        Token_model Refresh_Token(Token_model model);
     }
 }

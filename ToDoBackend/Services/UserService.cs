@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 using ToDoBackend.Entities;
 using ToDoBackend.Entities.Create_Models;
@@ -15,12 +16,14 @@ namespace ToDoBackend.Services
         private readonly IMapper mapper;
         private readonly DatabaseContext dbcontext;
         private readonly IPasswordHasher<User_DTO> hasher;
+        private readonly ITokenService tokenService;
 
-        public UserService(DatabaseContext _dbcontext, IMapper _mapper, IPasswordHasher<User_DTO> _hasher)
+        public UserService(DatabaseContext _dbcontext, IMapper _mapper, IPasswordHasher<User_DTO> _hasher, ITokenService service)
         {
             mapper = _mapper;
             dbcontext = _dbcontext;
             hasher = _hasher;
+            this.tokenService = service;
         }
 
         public void Create_User(Create_User create_user)
@@ -47,7 +50,7 @@ namespace ToDoBackend.Services
             dbcontext.SaveChanges();
         }
 
-        public User_DTO Get_User(LoginUser login_user)
+        public Token_model Login_User(LoginUser login_user)
         {
             //this method verifies if user for provided email address exsists in database
             //if yes, it checks if provided password is the same as the one stored in database
@@ -59,7 +62,44 @@ namespace ToDoBackend.Services
             PasswordVerificationResult result = hasher.VerifyHashedPassword(user, user.user_password, login_user.user_password);
             if (result != PasswordVerificationResult.Success)
                 throw new Wrong_Credentials_Exception("Provided credentials are wrong");
-            return user;
+
+            string token = tokenService.CreateToken(user);
+            string refreshToken = tokenService.CreateRefreshToken();
+            user.user_refresh_token = refreshToken;
+            dbcontext.SaveChanges();
+
+            return new Token_model() 
+                        { Access_Token = token, 
+                          Refresh_Token = refreshToken
+                        };
+
+        }
+
+        public Token_model Refresh_Token(Token_model model)
+        {
+            ClaimsPrincipal principal = tokenService.GetPrincipalFromOldToken(model.Access_Token);
+            int userID = Convert.ToInt32(principal.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var user = dbcontext.user.FirstOrDefault(u => u.user_id == userID);
+            if (user == null)
+                throw new User_Not_Found_Exception("No user found for data assigned to this token");
+
+            bool refreshTokenCorrect = user.user_refresh_token == model.Refresh_Token;
+            //to be added: method to verify if refresh token is still valid
+            if (!refreshTokenCorrect)
+                throw new Refresh_Token_Invalid_Exception("Provided refresh token is invalid");
+
+            string newRefreshToken = tokenService.CreateRefreshToken();
+            string newAccessToken = tokenService.CreateToken(user);
+
+            user.user_refresh_token = newRefreshToken;
+            dbcontext.SaveChanges();
+
+            return new Token_model()
+                        {
+                            Access_Token = newAccessToken,
+                            Refresh_Token = newRefreshToken
+                        };
 
         }
 

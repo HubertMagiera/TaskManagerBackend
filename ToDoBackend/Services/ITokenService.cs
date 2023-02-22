@@ -1,10 +1,14 @@
-﻿using ToDoBackend.Entities;
+﻿using System.Security.Claims;
+using ToDoBackend.Entities;
 using ToDoBackend.Entities.DTO_Models;
 
 namespace ToDoBackend.Services
 {
     public interface ITokenService
     {
-        string CreateToken(string key, string issuer,string audience, User_DTO user);
+        string CreateToken(User_DTO user);
+        string CreateRefreshToken();
+        ClaimsPrincipal GetPrincipalFromOldToken(string oldToken);
+
     }
 }
