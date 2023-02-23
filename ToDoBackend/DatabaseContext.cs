@@ -11,17 +11,17 @@ namespace ToDoBackend
         }
 
         //they will be mapped to database tables
-        public DbSet<Task_DTO> task { get; set; }
-        public DbSet<Task_type_DTO> task_type { get; set; }
-        public DbSet<User_DTO> user { get; set; }
+        public DbSet<TaskDTO> task { get; set; }
+        public DbSet<TaskTypeDTO> task_type { get; set; }
+        public DbSet<UserDTO> user { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             //defining primary keys for the tables
             //another approach is to use [Key] in model class
-            builder.Entity<Task_DTO>().HasKey(task => task.task_id);
-            builder.Entity<Task_type_DTO>().HasKey(task_type => task_type.task_type_id);
-            builder.Entity<User_DTO>().HasKey(user => user.user_id);
+            builder.Entity<TaskDTO>().HasKey(task => task.task_id);
+            builder.Entity<TaskTypeDTO>().HasKey(task_type => task_type.task_type_id);
+            builder.Entity<UserDTO>().HasKey(user => user.user_id);
         }
     }
  

@@ -26,19 +26,19 @@ namespace ToDoBackend.Services
             this.contextService = _contextService;
             this.authorizationService = _authorizationService;
         }
-        public int AddNewTask(Create_Task taskToAdd)
+        public int AddNewTask(CreateTask taskToAdd)
         {
             var userID = contextService.GetUserID();//reads id of a user who created this request
             //map to dto before sending to db
-            Task_DTO toAdd = mapper.Map<Task_DTO>(taskToAdd);
+            TaskDTO toAdd = mapper.Map<TaskDTO>(taskToAdd);
 
-            User_DTO user = dbContext.user.FirstOrDefault(u => u.user_id == userID);
+            UserDTO user = dbContext.user.FirstOrDefault(u => u.user_id == userID);
             if (user == null)
-                throw new User_Not_Found_Exception("Such user was not found.");
+                throw new UserNotFoundException("Such user was not found.");
 
-            Task_type_DTO task_type = dbContext.task_type.FirstOrDefault(type => type.task_type_id == taskToAdd.task_type_id);//get task type for provided task type id
+            TaskTypeDTO task_type = dbContext.task_type.FirstOrDefault(type => type.task_type_id == taskToAdd.task_type_id);//get task type for provided task type id
             if (task_type == null)
-                throw new Task_Type_Not_Provided_Exception("Please provide correct task type.");
+                throw new TaskTypeNotProvidedException("Please provide correct task type.");
 
             toAdd.task_id = dbContext.task.Max(task => task.task_id) +1;
             toAdd.task_close_date = null;
@@ -58,19 +58,19 @@ namespace ToDoBackend.Services
                 .Include(task => task.user)
                 .FirstOrDefault(task => task.task_id == id);//find task that should be archived
             if (taskToArchive == null)//if task not found, throw an error
-                throw new Task_Not_Found_Exception("There is no task for provided ID");
+                throw new TaskNotFoundException("There is no task for provided ID");
 
             //verification if user who wants to update a task is also its owner/creator
-            var verificationResult = authorizationService.AuthorizeAsync(contextService.GetUser(), taskToArchive, new Task_Owner_Reqiurement()).Result;
+            var verificationResult = authorizationService.AuthorizeAsync(contextService.GetUser(), taskToArchive, new TaskOwnerReqiurement()).Result;
             if (!verificationResult.Succeeded)
-                throw new User_Not_Allowed_Exception("You are not allowed to archive this task");
+                throw new UserNotAllowedException("You are not allowed to archive this task");
 
             taskToArchive.task_close_date = DateTime.Now;//set task close date
             taskToArchive.task_status = "Cancelled";//set task status
             dbContext.SaveChanges();
         }
 
-        public List<View_task> GetAllTasksForUser()
+        public List<ViewTask> GetAllTasksForUser()
         {
             var userID = contextService.GetUserID();//read user id
             var tasks = dbContext.task
@@ -79,45 +79,45 @@ namespace ToDoBackend.Services
                 .Where(task => task.user.user_id == userID)
                 .ToList();//create list of tasks created by user
                 
-            return mapper.Map<List<View_task>>(tasks);
+            return mapper.Map<List<ViewTask>>(tasks);
         }
 
-        public View_task GetTaskByID(int id)
+        public ViewTask GetTaskByID(int id)
         {
             var task = dbContext.task
                 .Include(task => task.task_Type)
                 .Include(task => task.user)
                 .FirstOrDefault(t => t.task_id == id);//find task by provided id
             if (task == null)//in case no task found, throw an error
-                throw new Task_Not_Found_Exception("There is no task for provided ID");
+                throw new TaskNotFoundException("There is no task for provided ID");
 
             //verification if user who wants to update a task is also its owner/creator
-            var verificationResult = authorizationService.AuthorizeAsync(contextService.GetUser(), task, new Task_Owner_Reqiurement()).Result;
+            var verificationResult = authorizationService.AuthorizeAsync(contextService.GetUser(), task, new TaskOwnerReqiurement()).Result;
             if (!verificationResult.Succeeded)
-                throw new User_Not_Allowed_Exception("You are not allowed to view this task");
+                throw new UserNotAllowedException("You are not allowed to view this task");
 
-            return mapper.Map<View_task>(task);
+            return mapper.Map<ViewTask>(task);
         }
 
-        public void UpdateTask(Update_Task taskToUpdate)
+        public void UpdateTask(UpdateTask taskToUpdate)
         {
             int id = taskToUpdate.task_id;
 
             var task_type = dbContext.task_type.FirstOrDefault(type => type.task_type_id == taskToUpdate.task_type_id);//find task type for id provided
             if (task_type == null)//in case user did not provide id or id is wrong, throw an error
-                throw new Task_Type_Not_Provided_Exception("Task type not provided or not available in database");
+                throw new TaskTypeNotProvidedException("Task type not provided or not available in database");
 
             var taskFromDB = dbContext.task
                 .Include(task => task.task_Type)
                 .Include(task => task.user)
                 .FirstOrDefault(task => task.task_id == id);//find task that needs to be updated
             if (taskFromDB == null)//in case task is not found, throw an error
-                throw new Task_Not_Found_Exception("There is no task for provided ID or this task was not created by current user");
+                throw new TaskNotFoundException("There is no task for provided ID or this task was not created by current user");
 
             //verification if user who wants to update a task is also its owner/creator
-            var verificationResult = authorizationService.AuthorizeAsync(contextService.GetUser(), taskFromDB, new Task_Owner_Reqiurement()).Result;
+            var verificationResult = authorizationService.AuthorizeAsync(contextService.GetUser(), taskFromDB, new TaskOwnerReqiurement()).Result;
             if (!verificationResult.Succeeded)
-                throw new User_Not_Allowed_Exception("You are not allowed to update this task");
+                throw new UserNotAllowedException("You are not allowed to update this task");
 
             //update values for the task
             taskFromDB.task_name = taskToUpdate.task_name;

@@ -6,7 +6,7 @@ namespace ToDoBackend.Services
 {
     public interface ITokenService
     {
-        string CreateToken(User_DTO user);
+        string CreateToken(UserDTO user);
         string CreateRefreshToken();
         ClaimsPrincipal GetPrincipalFromOldToken(string oldToken);
 

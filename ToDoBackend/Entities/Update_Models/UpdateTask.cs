@@ -3,7 +3,7 @@ using ToDoBackend.Entities.DTO_Models;
 
 namespace ToDoBackend.Entities.Update_Models
 {
-    public class Update_Task
+    public class UpdateTask
     {
         [Required]
         public int task_id { get; set; }

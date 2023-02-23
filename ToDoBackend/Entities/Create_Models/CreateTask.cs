@@ -4,7 +4,7 @@ using ToDoBackend.Entities.View_Models;
 
 namespace ToDoBackend.Entities.Create_Models
 {
-    public class Create_Task
+    public class CreateTask
     {
 
         [Required(ErrorMessage = "Task name is required")]

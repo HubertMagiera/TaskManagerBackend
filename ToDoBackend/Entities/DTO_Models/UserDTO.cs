@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ToDoBackend.Entities.DTO_Models
 {
-    public class User_DTO
+    public class UserDTO
     {
 
         [Required]

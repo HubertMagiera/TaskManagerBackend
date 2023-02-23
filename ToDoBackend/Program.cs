@@ -23,8 +23,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     //options.RequireHttpsMetadata = false;
     options.TokenValidationParameters = new TokenValidationParameters()
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
+        ValidateIssuer = true,//issuer identifies who created the token
+        ValidateAudience = true,//identifies the recipients of the token
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = settings.Issuer,
@@ -45,10 +45,10 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IHttpContextService, HttpContextService>();
 //add classes which run authorization rules
-builder.Services.AddScoped<IAuthorizationHandler, Task_Owner_Reqiurement_Handler>();
+builder.Services.AddScoped<IAuthorizationHandler, TaskOwnerReqiurementHandler>();
 builder.Services.AddHttpContextAccessor();
 //add hasher for password hashing
-builder.Services.AddScoped<IPasswordHasher<User_DTO>,PasswordHasher<User_DTO>>();
+builder.Services.AddScoped<IPasswordHasher<UserDTO>,PasswordHasher<UserDTO>>();
 //add auto mapper
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 //add middleware

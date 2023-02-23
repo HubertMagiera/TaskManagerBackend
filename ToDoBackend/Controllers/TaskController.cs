@@ -20,12 +20,12 @@ namespace ToDoBackend.Controllers
             this.taskService = _taskService;
         }
         [HttpGet]
-        public ActionResult<List<View_task>> GetTasksForUser()
+        public ActionResult<List<ViewTask>> GetTasksForUser()
         {
             return Ok(taskService.GetAllTasksForUser());
         }
         [HttpPost]
-        public ActionResult AddNewTask([FromBody] Create_Task taskToAdd)
+        public ActionResult AddNewTask([FromBody] CreateTask taskToAdd)
         {
             //check if all reqiured data is provided
             if(!ModelState.IsValid)
@@ -38,7 +38,7 @@ namespace ToDoBackend.Controllers
 
         }
         [HttpGet("{id}")]
-        public ActionResult<View_task> GetTaskByID([FromRoute] int id)
+        public ActionResult<ViewTask> GetTaskByID([FromRoute] int id)
         {
             return Ok(taskService.GetTaskByID(id));
         }
@@ -52,7 +52,7 @@ namespace ToDoBackend.Controllers
         }
 
         [HttpPut]
-        public ActionResult UpdateTask([FromBody] Update_Task taskToBeUpdated)
+        public ActionResult UpdateTask([FromBody] UpdateTask taskToBeUpdated)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

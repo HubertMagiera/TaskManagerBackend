@@ -13,47 +13,47 @@ namespace ToDoBackend
             {
                 await next.Invoke(context);
             }
-            catch(Task_Type_Not_Provided_Exception ex)
+            catch(TaskTypeNotProvidedException ex)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(String.Format("{0}: {1}",errorMessage, ex.Message));
             }
-            catch(User_Not_Found_Exception ex)
+            catch(UserNotFoundException ex)
             {
                 context.Response.StatusCode = 404;
                 await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
             }
-            catch(Task_Not_Found_Exception ex)
+            catch(TaskNotFoundException ex)
             {
                 context.Response.StatusCode = 404;
                 await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
             }
-            catch(Wrong_Credentials_Exception ex)
+            catch(WrongCredentialsException ex)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
             }
-            catch(User_Already_Exists_Exception ex)
+            catch(UserAlreadyExistsException ex)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
             }
-            catch(Password_Does_Not_Meet_Rules_Exception ex)
+            catch(PasswordDoesNotMeetRulesException ex)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
             }
-            catch(Not_Email_Format_Exception ex)
+            catch(NotEmailFormatException ex)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
             }
-            catch(User_Not_Allowed_Exception ex)
+            catch(UserNotAllowedException ex)
             {
                 context.Response.StatusCode = 403;
                 await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));
             }
-            catch(Refresh_Token_Invalid_Exception ex)
+            catch(RefreshTokenInvalidException ex)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(String.Format("{0}: {1}", errorMessage, ex.Message));

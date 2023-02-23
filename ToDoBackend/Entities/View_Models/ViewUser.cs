@@ -2,7 +2,7 @@
 
 namespace ToDoBackend.Entities.View_Models
 {
-    public class View_user
+    public class ViewUser
     {
         [Required]
         public int user_id { get; set; }

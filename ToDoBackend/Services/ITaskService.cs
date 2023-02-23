@@ -6,13 +6,13 @@ namespace ToDoBackend.Services
 {
     public interface ITaskService
     {
-        List<View_task> GetAllTasksForUser();
+        List<ViewTask> GetAllTasksForUser();
 
-        View_task GetTaskByID(int id);
+        ViewTask GetTaskByID(int id);
 
-        void UpdateTask(Update_Task taskToUpdate);
+        void UpdateTask(UpdateTask taskToUpdate);
 
-        int AddNewTask(Create_Task taskToAdd);
+        int AddNewTask(CreateTask taskToAdd);
 
         void DeleteTask(int id);
     }

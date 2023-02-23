@@ -7,10 +7,10 @@ namespace ToDoBackend.Services
 {
     public interface IUserService
     {
-        void Create_User(Create_User create_user);
+        void CreateUser(CreateUser create_user);
 
-        Token_model Login_User(LoginUser login_user);
+        TokenModel LoginUser(LoginUser login_user);
 
-        Token_model Refresh_Token(Token_model model);
+        TokenModel RefreshToken(TokenModel model);
     }
 }

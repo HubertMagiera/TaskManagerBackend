@@ -15,10 +15,10 @@ namespace ToDoBackend.Services
 
         private readonly IMapper mapper;
         private readonly DatabaseContext dbcontext;
-        private readonly IPasswordHasher<User_DTO> hasher;
+        private readonly IPasswordHasher<UserDTO> hasher;
         private readonly ITokenService tokenService;
 
-        public UserService(DatabaseContext _dbcontext, IMapper _mapper, IPasswordHasher<User_DTO> _hasher, ITokenService service)
+        public UserService(DatabaseContext _dbcontext, IMapper _mapper, IPasswordHasher<UserDTO> _hasher, ITokenService service)
         {
             mapper = _mapper;
             dbcontext = _dbcontext;
@@ -26,23 +26,23 @@ namespace ToDoBackend.Services
             this.tokenService = service;
         }
 
-        public void Create_User(Create_User create_user)
+        public void CreateUser(CreateUser create_user)
         {
             //first step is to validate if provided email address is valid
             bool emailCorrect = validateEmailFormat(create_user.user_email);
             if (emailCorrect == false)
-                throw new Not_Email_Format_Exception("Provided email address has invalid format");
+                throw new NotEmailFormatException("Provided email address has invalid format");
             //then method verifies if there is already a user assigned to provided email address
             var userInDatabase = dbcontext.user.FirstOrDefault(u => u.user_email == create_user.user_email);
             if (userInDatabase != null)
-                throw new User_Already_Exists_Exception("Provided email address is already in use");
+                throw new UserAlreadyExistsException("Provided email address is already in use");
             //then method verifies if provided password meets reqiured rules
             bool passwordVerificationResult = validatePasswordMeetsRules(create_user.user_password);
             if (passwordVerificationResult == false)
-                throw new Password_Does_Not_Meet_Rules_Exception("Provided password does not meet reqiured conditions. Please provide another one");
+                throw new PasswordDoesNotMeetRulesException("Provided password does not meet reqiured conditions. Please provide another one");
 
             //user is mapped into user_dto class which is the same as the database table
-            var userToBeAdded = mapper.Map<User_DTO>(create_user);
+            var userToBeAdded = mapper.Map<UserDTO>(create_user);
             userToBeAdded.user_id = dbcontext.user.Max(u => u.user_id) +1;//read max user id from database and assign +1 as new user id
             userToBeAdded.user_password = hasher.HashPassword(userToBeAdded, create_user.user_password);//hash provided password
 
@@ -50,52 +50,55 @@ namespace ToDoBackend.Services
             dbcontext.SaveChanges();
         }
 
-        public Token_model Login_User(LoginUser login_user)
+        public TokenModel LoginUser(LoginUser login_user)
         {
-            //this method verifies if user for provided email address exsists in database
-            //if yes, it checks if provided password is the same as the one stored in database
-            //if both conditions are met, method returns the user
+            //this method logs in the user
+
+            //verification if user for provided email address exists
             var user = dbcontext.user.FirstOrDefault(u => u.user_email == login_user.user_email);
 
             if (user == null)
-                throw new User_Not_Found_Exception("Provided credentials are wrong");
+                throw new UserNotFoundException("Provided credentials are wrong");
+            //verification if password provided is the same as the one in database
             PasswordVerificationResult result = hasher.VerifyHashedPassword(user, user.user_password, login_user.user_password);
             if (result != PasswordVerificationResult.Success)
-                throw new Wrong_Credentials_Exception("Provided credentials are wrong");
+                throw new WrongCredentialsException("Provided credentials are wrong");
 
-            string token = tokenService.CreateToken(user);
-            string refreshToken = tokenService.CreateRefreshToken();
-            user.user_refresh_token = refreshToken;
+            string token = tokenService.CreateToken(user);//creating new access token
+            string refreshToken = tokenService.CreateRefreshToken();//creating new refresh token
+            user.user_refresh_token = refreshToken;//replace refresh tokens in database
             dbcontext.SaveChanges();
 
-            return new Token_model() 
+            return new TokenModel() 
                         { Access_Token = token, 
                           Refresh_Token = refreshToken
                         };
 
         }
 
-        public Token_model Refresh_Token(Token_model model)
+        public TokenModel RefreshToken(TokenModel model)
         {
+            //method used for refreshing request tokens
+
             ClaimsPrincipal principal = tokenService.GetPrincipalFromOldToken(model.Access_Token);
             int userID = Convert.ToInt32(principal.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            var user = dbcontext.user.FirstOrDefault(u => u.user_id == userID);
+            var user = dbcontext.user.FirstOrDefault(u => u.user_id == userID);//find user based on info read from provided expired access token
             if (user == null)
-                throw new User_Not_Found_Exception("No user found for data assigned to this token");
+                throw new UserNotFoundException("No user found for data assigned to this token");
 
-            bool refreshTokenCorrect = user.user_refresh_token == model.Refresh_Token;
+            bool refreshTokenCorrect = user.user_refresh_token == model.Refresh_Token;//verify if refresh token in database is the same as the one provided
             //to be added: method to verify if refresh token is still valid
             if (!refreshTokenCorrect)
-                throw new Refresh_Token_Invalid_Exception("Provided refresh token is invalid");
+                throw new RefreshTokenInvalidException("Provided refresh token is invalid");
 
-            string newRefreshToken = tokenService.CreateRefreshToken();
-            string newAccessToken = tokenService.CreateToken(user);
+            string newRefreshToken = tokenService.CreateRefreshToken();//create new refresh token
+            string newAccessToken = tokenService.CreateToken(user);//create new access token
 
-            user.user_refresh_token = newRefreshToken;
+            user.user_refresh_token = newRefreshToken;//replace refresh tokens in database
             dbcontext.SaveChanges();
 
-            return new Token_model()
+            return new TokenModel()
                         {
                             Access_Token = newAccessToken,
                             Refresh_Token = newRefreshToken

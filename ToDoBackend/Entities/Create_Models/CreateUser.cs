@@ -2,7 +2,7 @@
 
 namespace ToDoBackend.Entities.Create_Models
 {
-    public class Create_User
+    public class CreateUser
     {
         [Required]
         [MaxLength(30)]

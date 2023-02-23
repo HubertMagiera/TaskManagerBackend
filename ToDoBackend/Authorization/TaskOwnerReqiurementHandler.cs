@@ -4,9 +4,9 @@ using ToDoBackend.Entities.DTO_Models;
 
 namespace ToDoBackend.Authorization
 {
-    public class Task_Owner_Reqiurement_Handler : AuthorizationHandler<Task_Owner_Reqiurement, Task_DTO>
+    public class TaskOwnerReqiurementHandler : AuthorizationHandler<TaskOwnerReqiurement, TaskDTO>
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, Task_Owner_Reqiurement requirement, Task_DTO task)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, TaskOwnerReqiurement requirement, TaskDTO task)
         {
             int userID = Convert.ToInt32(context.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 

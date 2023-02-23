@@ -2,7 +2,7 @@
 
 namespace ToDoBackend.Entities.DTO_Models
 {
-    public class Task_type_DTO
+    public class TaskTypeDTO
     {
         //EF Core will call the parametrised ctor if it is provided
         //if parametrised ctor is not provided, EF Core calls the parameterless ctor

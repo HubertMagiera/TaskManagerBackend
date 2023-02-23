@@ -2,7 +2,7 @@
 
 namespace ToDoBackend.Entities.View_Models
 {
-    public class View_task_type
+    public class ViewTaskType
     {
         [Required]
         public int task_type_id { get; set; }
@@ -13,5 +13,6 @@ namespace ToDoBackend.Entities.View_Models
 
         [MaxLength(500)]
         public string? task_type_description { get; set; }
+
     }
 }
