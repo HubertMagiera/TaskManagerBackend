@@ -116,7 +116,7 @@ namespace ToDoBackend.Services
             //can not contain whitespaces
             //must contain one of the special characters
 
-            if (password.Length < 8 || !password.Any(char.IsUpper) || !password.Any(char.IsLower)|| !password.Any(char.IsDigit) || !password.Any(char.IsWhiteSpace))
+            if (password.Length < 8 || !password.Any(char.IsUpper) || !password.Any(char.IsLower)|| !password.Any(char.IsDigit) || password.Any(char.IsWhiteSpace))
                 return false;
 
             string specialCharacters = "!@#$%^&*+-/?<>;~`[]{}:,.|=_";//special characters. At least one of them needs to be present in provided password
